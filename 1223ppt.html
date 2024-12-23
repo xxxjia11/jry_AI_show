@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>触摸事件移动距离记录</title>
+    <title>触摸方向判断</title>
     <style>
         /* 基本样式 */
         * {
@@ -37,7 +37,7 @@
             margin-bottom: 1rem;
         }
 
-        #distance {
+        #direction {
             font-size: 1.5rem;
             margin-top: 1rem;
         }
@@ -45,61 +45,55 @@
 </head>
 <body>
     <div class="container" id="event-container">
-        <h1>触摸事件移动距离记录</h1>
-        <p>按住屏幕并移动手指来记录移动距离。</p>
-        <p id="distance">移动距离: 0 px</p>
+        <h1>触摸方向判断</h1>
+        <p>按住屏幕并移动手指来判断方向。</p>
+        <p id="direction">方向: 无</p>
     </div>
 
     <script>
-        // 获取容器元素和距离显示元素
+        // 获取容器元素和方向显示元素
         const container = document.getElementById('event-container');
-        const distanceElement = document.getElementById('distance');
+        const directionElement = document.getElementById('direction');
 
-        let startX, startY, currentX, currentY, totalDistance = 0;
+        let startY;
 
         // 触摸开始事件
         container.addEventListener('touchstart', function(event) {
             event.preventDefault(); // 阻止默认行为
             const touch = event.touches[0];
-            startX = touch.clientX;
             startY = touch.clientY;
-            totalDistance = 0;
-            distanceElement.textContent = `移动距离: ${totalDistance} px`;
+            directionElement.textContent = '方向: 无';
         });
 
         // 触摸移动事件
         container.addEventListener('touchmove', function(event) {
             event.preventDefault(); // 阻止默认行为
             const touch = event.touches[0];
-            currentX = touch.clientX;
-            currentY = touch.clientY;
+            const currentY = touch.clientY;
 
-            // 计算当前移动距离
-            const dx = currentX - startX;
-            const dy = currentY - startY;
-            const currentDistance = Math.sqrt(dx * dx + dy * dy);
+            // 计算触摸点的移动方向
+            if (currentY < startY) {
+                directionElement.textContent = '方向: 往上翻';
+            } else if (currentY > startY) {
+                directionElement.textContent = '方向: 往下翻';
+            } else {
+                directionElement.textContent = '方向: 无';
+            }
 
-            // 更新总移动距离
-            totalDistance += currentDistance;
-
-            // 重置起始位置
-            startX = currentX;
+            // 更新起始位置
             startY = currentY;
-
-            // 更新显示的距离
-            distanceElement.textContent = `移动距离: ${Math.round(totalDistance)} px`;
         });
 
         // 触摸结束事件
         container.addEventListener('touchend', function(event) {
             event.preventDefault(); // 阻止默认行为
-            distanceElement.textContent = `移动距离: ${Math.round(totalDistance)} px`;
+            directionElement.textContent = '方向: 无';
         });
 
-        // 触摸取消事件（例如，用户的手指离开屏幕）
+        // 触摸取消事件
         container.addEventListener('touchcancel', function(event) {
             event.preventDefault(); // 阻止默认行为
-            distanceElement.textContent = `移动距离: ${Math.round(totalDistance)} px`;
+            directionElement.textContent = '方向: 无';
         });
     </script>
 </body>
