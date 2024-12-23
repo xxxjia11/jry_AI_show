@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>全屏翻页</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .page {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 6vw; /* 超大字体 */
+            color: white;
+            text-align: center;
+        }
+
+        .red {
+            background-color: red;
+        }
+
+        .green {
+            background-color: green;
+        }
+
+        .blue {
+            background-color: blue;
+        }
+
+        #redPage {
+            display: flex; /* 初始显示红色页面 */
+        }
+    </style>
+</head>
+<body>
+    <div class="page red" id="redPage">
+        <div id="pageIndex0">0</div>
+    </div>
+    <div class="page green" id="greenPage">
+        <div id="pageIndex1">1</div>
+    </div>
+    <div class="page blue" id="bluePage">
+        <div id="pageIndex2">2</div>
+    </div>
+
+    <script>
+        let currentPage = 0; // 当前显示的页面索引
+        const pages = document.querySelectorAll('.page');
+        const totalPages = pages.length;
+
+        function showPage(index) {
+            for (let i = 0; i < totalPages; i++) {
+                pages[i].style.display = 'none';
+            }
+            if (index >= 0 && index < totalPages) {
+                pages[index].style.display = 'flex';
+                // 更新页面中的索引值
+                pages[index].querySelector('div').textContent = index;
+            }
+        }
+
+        let startY, endY;
+
+        document.addEventListener('touchstart', function(event) {
+            startY = event.touches[0].clientY;
+        });
+
+        document.addEventListener('touchend', function(event) {
+            endY = event.changedTouches[0].clientY;
+
+            const deltaY = startY - endY; // 注意这里是 startY - endY
+
+            if (Math.abs(deltaY) > 30) {
+                if (deltaY > 0) {
+                    // 向上滑动，显示下一个页面
+                    currentPage = (currentPage + 1) % totalPages;
+                } else {
+                    // 向下滑动，显示上一个页面
+                    currentPage = (currentPage - 1 + totalPages) % totalPages;
+                }
+                showPage(currentPage);
+            }
+        });
+
+        // 初始化显示第一个页面
+        showPage(currentPage);
+    </script>
+</body>
+</html>
