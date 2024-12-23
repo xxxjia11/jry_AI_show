@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>触摸事件移动距离记录</title>
+    <style>
+        /* 基本样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
+
+        .container {
+            padding: 2rem;
+            background-color: #fff;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h1 {
+            margin-bottom: 1rem;
+        }
+
+        #distance {
+            font-size: 1.5rem;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="event-container">
+        <h1>触摸事件移动距离记录</h1>
+        <p>按住屏幕并移动手指来记录移动距离。</p>
+        <p id="distance">移动距离: 0 px</p>
+    </div>
+
+    <script>
+        // 获取容器元素和距离显示元素
+        const container = document.getElementById('event-container');
+        const distanceElement = document.getElementById('distance');
+
+        let startX, startY, currentX, currentY, totalDistance = 0;
+
+        // 触摸开始事件
+        container.addEventListener('touchstart', function(event) {
+            event.preventDefault(); // 阻止默认行为
+            const touch = event.touches[0];
+            startX = touch.clientX;
+            startY = touch.clientY;
+            totalDistance = 0;
+            distanceElement.textContent = `移动距离: ${totalDistance} px`;
+        });
+
+        // 触摸移动事件
+        container.addEventListener('touchmove', function(event) {
+            event.preventDefault(); // 阻止默认行为
+            const touch = event.touches[0];
+            currentX = touch.clientX;
+            currentY = touch.clientY;
+
+            // 计算当前移动距离
+            const dx = currentX - startX;
+            const dy = currentY - startY;
+            const currentDistance = Math.sqrt(dx * dx + dy * dy);
+
+            // 更新总移动距离
+            totalDistance += currentDistance;
+
+            // 重置起始位置
+            startX = currentX;
+            startY = currentY;
+
+            // 更新显示的距离
+            distanceElement.textContent = `移动距离: ${Math.round(totalDistance)} px`;
+        });
+
+        // 触摸结束事件
+        container.addEventListener('touchend', function(event) {
+            event.preventDefault(); // 阻止默认行为
+            distanceElement.textContent = `移动距离: ${Math.round(totalDistance)} px`;
+        });
+
+        // 触摸取消事件（例如，用户的手指离开屏幕）
+        container.addEventListener('touchcancel', function(event) {
+            event.preventDefault(); // 阻止默认行为
+            distanceElement.textContent = `移动距离: ${Math.round(totalDistance)} px`;
+        });
+    </script>
+</body>
+</html>
