@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>触摸方向判断</title>
+    <title>触摸方向判断与计数</title>
     <style>
         /* 基本样式 */
         * {
@@ -41,21 +41,29 @@
             font-size: 1.5rem;
             margin-top: 1rem;
         }
+
+        #counter {
+            font-size: 1.5rem;
+            margin-top: 1rem;
+        }
     </style>
 </head>
 <body>
     <div class="container" id="event-container">
-        <h1>触摸方向判断</h1>
+        <h1>触摸方向判断与计数</h1>
         <p>按住屏幕并移动手指来判断方向。</p>
         <p id="direction">方向: 无</p>
+        <p id="counter">计数: 0</p>
     </div>
 
     <script>
-        // 获取容器元素和方向显示元素
+        // 获取容器元素、方向显示元素和计数器元素
         const container = document.getElementById('event-container');
         const directionElement = document.getElementById('direction');
+        const counterElement = document.getElementById('counter');
 
         let startY;
+        let counter = 0;
 
         // 触摸开始事件
         container.addEventListener('touchstart', function(event) {
@@ -79,15 +87,32 @@
             } else {
                 directionElement.textContent = '方向: 无';
             }
-
-            // 更新起始位置
-            startY = currentY;
         });
 
         // 触摸结束事件
         container.addEventListener('touchend', function(event) {
             event.preventDefault(); // 阻止默认行为
-            directionElement.textContent = '方向: 无';
+            const touch = event.changedTouches[0];
+            const endY = touch.clientY;
+
+            // 计算最终的 Y 轴移动距离
+            const deltaY = endY - startY;
+
+            // 判断是否满足条件
+            if (deltaY < -50) {
+                // 向上翻了50像素以上
+                counter++;
+                directionElement.textContent = '方向: 向上翻超过50px';
+            } else if (deltaY > 50) {
+                // 向下翻了50像素以上
+                counter--;
+                directionElement.textContent = '方向: 向下翻超过50px';
+            } else {
+                directionElement.textContent = '方向: 无';
+            }
+
+            // 更新计数器显示
+            counterElement.textContent = `计数: ${counter}`;
         });
 
         // 触摸取消事件
